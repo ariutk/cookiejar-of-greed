@@ -14,9 +14,9 @@ module Greed
 
     class DomainHandler
       def determine_domain(document_domain, cookie_domain)
-        if cookie_domain.blank?
+        unless cookie_domain.present?
           return {
-            domain: document_domain, # cookie host not present
+            domain: document_domain, # cookie domain not present
             include_subdomains: false
           }
         end
