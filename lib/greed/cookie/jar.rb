@@ -57,7 +57,7 @@ module Greed
         @cookie_map.clone
       end
 
-      def cookie_for(document_uri)
+      def cookie_record_for(document_uri)
         parsed_document_uri = begin
           ::URI.parse(document_uri)
         rescue ::URI::Error
@@ -82,7 +82,7 @@ module Greed
       end
 
       def cookie_header_for(document_uri)
-        cookie_for(document_uri).map do |cookie_record|
+        cookie_record_for(document_uri).map do |cookie_record|
           "#{cookie_record[:name]}=#{cookie_record[:value]}"
         end.to_a.join('; ')
       end
