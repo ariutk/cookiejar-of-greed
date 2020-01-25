@@ -1,0 +1,62 @@
+PATH
+  remote: .
+  specs:
+    cookiejar_of_greed (0.0.1)
+      activesupport
+      memoist
+      public_suffix
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (6.0.2.1)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 0.7, < 2)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+      zeitwerk (~> 2.2)
+    concurrent-ruby (1.1.5)
+    diff-lcs (1.3)
+    docile (1.3.2)
+    i18n (1.8.2)
+      concurrent-ruby (~> 1.0)
+    json (2.3.0)
+    memoist (0.16.2)
+    minitest (5.14.0)
+    public_suffix (4.0.3)
+    rake (13.0.1)
+    rspec (3.9.0)
+      rspec-core (~> 3.9.0)
+      rspec-expectations (~> 3.9.0)
+      rspec-mocks (~> 3.9.0)
+    rspec-core (3.9.1)
+      rspec-support (~> 3.9.1)
+    rspec-expectations (3.9.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.9.0)
+    rspec-mocks (3.9.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.9.0)
+    rspec-support (3.9.2)
+    simplecov (0.17.1)
+      docile (~> 1.1)
+      json (>= 1.8, < 3)
+      simplecov-html (~> 0.10.0)
+    simplecov-html (0.10.2)
+    thread_safe (0.3.6)
+    tzinfo (1.2.6)
+      thread_safe (~> 0.1)
+    zeitwerk (2.2.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler
+  cookiejar_of_greed!
+  rake
+  rspec
+  simplecov
+
+BUNDLED WITH
+   2.1.4
