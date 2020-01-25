@@ -25,7 +25,15 @@ module Greed
         return false unless cookie_hash.present?
         current_time = @get_current_time.call
         parsed_document_uri = ::URI.parse(document_uri)
-        base = cookie_hash.slice(:name, :value, :path, :secure)
+        base = cookie_hash.slice(:name, :value, :secure)
+        path_attributes = {
+          path: cookie_hash[:path].tap do |path|
+            # default to root path
+            break '/' unless path.present?
+            # RFC 6265 5.1.4. base_path must be an absolute path.
+            return false unless path.start_with?(?/)
+          end
+        }
         domain_attributes = @determine_domain.call(
           parsed_document_uri.hostname,
           cookie_hash[:domain]
@@ -40,6 +48,7 @@ module Greed
         current_cookies[base[:name]] = base.merge(
           domain_attributes,
           expires_attributes,
+          path_attributes,
         )
         @cookie_map[final_domain] = current_cookies
         true
