@@ -21,7 +21,7 @@ module Greed
         @cookie_map = {}
       end
 
-      def store(document_uri, cookie_hash)
+      def append_cookie(document_uri, cookie_hash)
         return false unless cookie_hash.present?
         current_time = @get_current_time.call
         parsed_document_uri = ::URI.parse(document_uri)
@@ -97,7 +97,7 @@ module Greed
       end
 
       def parse_set_cookie(document_uri, header)
-        store(document_uri, @set_cookie_parser.call(header))
+        append_cookie(document_uri, @set_cookie_parser.call(header))
       end
 
       def garbage_collect
