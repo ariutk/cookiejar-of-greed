@@ -1,9 +1,10 @@
 require 'greed/cookie'
+require 'yaml'
 
 set_cookies = [
   "bcookie=93f7d3bf753946bda1cb53a534439d20c76e246b0e654dfa89bedd3ad540597c; path=/",
   "throttle-f9151a904e07fa0812b7b9fb20b6f1ab=1; domain=.lynda.com; expires=Thu, 23-Jul-2020 08:55:13 GMT; path=/; HttpOnly",
-  "token=7b035cb6-6788-4da6-896d-3336aadf681c,7cc8b823c86988dd67edbd20da9994cf,gdiqTU2qtWt6wBbcUzWqK15OhLPoGY3BUTS0okVX/D790mZHsorMJeKhp1eOANxgpektE/BHRSjtEj21avDikg==; expires=Thu, 23-Jan-2020 13:55:13 GMT; path=/; secure; HttpOnly",
+  "token=7b035cb6-6788-4da6-896d-3336aadf681c,7cc8b823c86988dd67edbd20da9994cf,gdiqTU2qtWt6wBbcUzWqK15OhLPoGY3BUTS0okVX/D790mZHsorMJeKhp1eOANxgpektE/BHRSjtEj21avDikg==; expires=Sat, 23-Jan-2021 13:55:13 GMT; path=/; secure; HttpOnly",
   "throttle-f9151a904e07fa0812b7b9fb20b6f1ab=1; domain=.lynda.com; expires=Thu, 23-Jul-2020 08:55:13 GMT; path=/; HttpOnly",
   "LyndaLoginStatus=Unknown-Not-Logged-In; domain=.lynda.com; expires=Wed, 23-Jan-2030 09:55:13 GMT; path=/",
   "throttle-66ae19c25d337eab52ef80bb97b39dd7=1; domain=.lynda.com; expires=Thu, 23-Jul-2020 08:55:13 GMT; path=/; HttpOnly",
@@ -43,7 +44,11 @@ jar = ::Greed::Cookie::Jar.new
 set_cookies.each do |header|
   jar.parse_set_cookie('https://www.lynda.com/eeee', header)
 end
+
 puts ::YAML.dump(jar.dump)
+
+puts ::YAML.dump(jar.cookie_header_for('https://www.lynda.com/bungo'))
+
 
 # .each do |parsed_cookie|
 #   # puts ::JSON.pretty_generate(

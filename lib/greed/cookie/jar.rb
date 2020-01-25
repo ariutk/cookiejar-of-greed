@@ -30,7 +30,7 @@ module Greed
           parsed_document_uri.hostname,
           cookie_hash[:domain]
         )
-        final_domain = domain_attributes.delete(:domain)
+        final_domain = domain_attributes[:domain]
         current_cookies = @cookie_map[final_domain].try(:clone) || {} # make each domain immutable
         expires_attributes = @calculate_expiration.call(
           current_time,
@@ -81,8 +81,10 @@ module Greed
         cookie_for_domain(parsed_document_uri.path, is_secure, domain_name)
       end
 
-      def cookie_string_for(document_uri)
-        cookie_for(document_uri)
+      def cookie_header_for(document_uri)
+        cookie_for(document_uri).map do |cookie_record|
+          "#{cookie_record[:name]}=#{cookie_record[:value]}"
+        end.to_a.join('; ')
       end
 
       def parse_set_cookie(document_uri, header)
@@ -114,7 +116,7 @@ module Greed
             yielder << scanner.rest
           end
         end.yield_self do |parent_domains|
-          [[domain_name], parent_domains.lazy].lazy.flat_map(&:itself)
+          [domain_name].chain(parent_domains.lazy).lazy
         end.flat_map do |lookup_domain|
           @cookie_map[lookup_domain].try(:values) || []
         end.yield_self do |cookie_records|
