@@ -29,7 +29,7 @@ module Greed
         path_attributes = {
           path: cookie_hash[:path].tap do |path|
             # default to root path
-            break '/' unless path.present?
+            break ?/ unless path.present?
             # RFC 6265 5.1.4. base_path must be an absolute path.
             return false unless path.start_with?(?/)
           end
@@ -153,7 +153,7 @@ module Greed
           !cookie_record[:secure]
         end.select do |cookie_record|
           next true unless cookie_record[:path].present?
-          next true if document_path.blank? && (cookie_record[:path] == '/')
+          next true if document_path.blank? && (cookie_record[:path] == ?/)
           document_path.start_with?(cookie_record[:path])
         end
       end

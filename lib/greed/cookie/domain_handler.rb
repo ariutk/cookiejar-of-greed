@@ -59,7 +59,7 @@ module Greed
         ] == cookie_domain) && \
         (document_domain[
           document_domain.size - cookie_domain.size - 1
-        ] == '.')
+        ] == ?.)
         {
           domain: cookie_domain, # set cookie for its parent domain
           include_subdomains: true
