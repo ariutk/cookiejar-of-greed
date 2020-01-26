@@ -15,7 +15,7 @@ module Greed
         # speed optimization for the common use cases
         if cookie_path.blank? || cookie_path == ?/
           return {
-            path: '/',
+            path: ?/,
           }
         end
         # RFC 6265 5.1.4. base_path must be an absolute path.

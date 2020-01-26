@@ -14,6 +14,7 @@ module Greed
 
     class DomainHandler
       def determine_domain(document_domain, cookie_domain)
+        document_domain = document_domain.downcase
         unless cookie_domain.present?
           return {
             domain: document_domain, # cookie domain not present
@@ -38,6 +39,7 @@ module Greed
             include_subdomains: false
           }
         end
+        cookie_domain = cookie_domain.downcase
         # ignore leading dot
         matched_data = /\A\s*\.?(?!\.)(\S+)\s*\z/.match(cookie_domain)
         raise MalformedCookieDomain unless matched_data

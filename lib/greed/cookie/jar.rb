@@ -157,7 +157,7 @@ module Greed
           end
         end.yield_self do |parent_domains|
           [domain_name].chain(parent_domains.lazy).lazy
-        end
+        end.map(&:downcase)
         compile_effective_cookies(domain_candidates, document_path) do |_cookie_name, cookie_record|
           filter_cookie(cookie_record, is_document_secure, current_time) &&
             ((cookie_record[:domain] == domain_name) || cookie_record[:include_subdomains])
