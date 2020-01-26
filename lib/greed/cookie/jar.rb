@@ -12,12 +12,14 @@ module Greed
         set_cookie_parser: nil,
         get_current_time: nil,
         calculate_expiration: nil,
-        determine_domain: nil
+        determine_domain: nil,
+        determine_path: nil
       )
         @set_cookie_parser = set_cookie_parser || Parser.new.method(:parse)
         @get_current_time = get_current_time || ::Time.method(:current)
         @calculate_expiration = calculate_expiration || ExpirationHandler.new.method(:calculate_expiration)
         @determine_domain = determine_domain || DomainHandler.new.method(:determine_domain)
+        @determine_path = determine_path || PathHandler.new.method(:determine_path)
         @cookie_map = {}
       end
 
@@ -26,38 +28,38 @@ module Greed
         current_time = @get_current_time.call
         parsed_document_uri = ::URI.parse(document_uri)
         base = cookie_hash.slice(:name, :value, :secure)
-        path_attributes = {
-          path: cookie_hash[:path].tap do |path|
-            # default to root path
-            break ?/ unless path.present?
-            # RFC 6265 5.1.4. base_path must be an absolute path.
-            return false unless path.start_with?(?/)
-          end
-        }
         domain_attributes = @determine_domain.call(
           parsed_document_uri.hostname,
           cookie_hash[:domain]
         )
+        path_attributes = @determine_path.call(
+          parsed_document_uri.path,
+          cookie_hash[:path]
+        )
         final_domain = domain_attributes[:domain]
-        current_cookies = @cookie_map[final_domain].try(:clone) || {} # make each domain immutable
+        final_path = path_attributes[:path]
+        domain_holder = @cookie_map[final_domain].try(:clone) || {}
+        path_holder = domain_holder[final_path].try(:clone) || {}
         expires_attributes = @calculate_expiration.call(
           current_time,
           cookie_hash[:'max-age'],
           cookie_hash[:expires]
         )
-        current_cookies[base[:name]] = base.merge(
+        path_holder[base[:name]] = base.merge(
           domain_attributes,
           expires_attributes,
           path_attributes,
         )
-        @cookie_map[final_domain] = current_cookies
+        domain_holder[final_path] = path_holder
+        @cookie_map[final_domain] = domain_holder
         true
-      rescue DomainError
+      rescue DomainError, PathError
         return false
       rescue Expired
-        removed_cookie = current_cookies.delete(base[:name])
+        removed_cookie = path_holder.delete(base[:name])
         return false unless removed_cookie
-        @cookie_map[final_domain] = current_cookies
+        domain_holder[final_path] = path_holder
+        @cookie_map[final_domain] = domain_holder
         return true
       end
 
