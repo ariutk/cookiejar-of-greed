@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/time'
 require 'time'
 
@@ -11,7 +12,8 @@ module Greed
 
     class PathHandler
       def determine_path(document_path, cookie_path)
-        unless cookie_path.present?
+        # speed optimization for the common use cases
+        if cookie_path.blank? || cookie_path == ?/
           return {
             path: '/',
           }
