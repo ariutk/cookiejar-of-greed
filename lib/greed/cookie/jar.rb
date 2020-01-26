@@ -2,6 +2,7 @@
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/object/try'
 require 'active_support/core_ext/time'
+require 'ipaddr'
 require 'time'
 require 'uri'
 
@@ -104,10 +105,14 @@ module Greed
 
       def garbage_collect
         current_time = @get_current_time.call
-        @cookie_map = @cookie_map.map do |domain_name, cookie_names|
-          cookie_names.select do |_cookie_name, cookie_record|
-            !cookie_record[:expires] || current_time < cookie_record[:expires]
-          end.yield_self do |filtered_result|
+        @cookie_map = @cookie_map.map do |domain_name, domain_holder|
+          domain_holder.map do |path_name, path_holder|
+            path_holder.select do |_cookie_name, cookie_record|
+              !cookie_record[:expires] || current_time < cookie_record[:expires]
+            end.yield_self do |filtered_result|
+              [path_name, filtered_result]
+            end
+          end.to_h.yield_self do |filtered_result|
             [domain_name, filtered_result]
           end
         end.to_h
@@ -116,10 +121,34 @@ module Greed
 
       private
 
+      def compile_effective_cookies(domain_candidates, document_path, &cookie_selector)
+        ensured_absolute = document_path.sub(/\A\/*/, ?/)
+        path_candidates = ::Enumerator.new do |yielder|
+          scanner = ::File.expand_path(?., ensured_absolute)
+          loop do
+            yielder << scanner
+            break if ?/ == scanner
+            scanner = ::File.expand_path('..', scanner)
+          end
+        end
+        effective_cookies = {}
+        domain_candidates.each do |domain_candidate|
+          path_candidates.each do |path_candidate|
+            additional_cookies = (@cookie_map.dig(
+              domain_candidate,
+              path_candidate,
+            ) || {}).select(&cookie_selector)
+            effective_cookies = additional_cookies.merge(effective_cookies)
+          end
+        end
+        effective_cookies
+      end
+
       def cookie_for_domain(document_path, is_document_secure, domain_name)
-        scanner = ::StringScanner.new(domain_name)
+        current_time = @get_current_time.call
         chunk_scanner = /\A[-_\w\d]+\./
-        ::Enumerator.new do |yielder|
+        domain_candidates = ::Enumerator.new do |yielder|
+          scanner = ::StringScanner.new(domain_name)
           loop do
             break if scanner.eos?
             removed_part = scanner.scan(chunk_scanner)
@@ -128,36 +157,23 @@ module Greed
           end
         end.yield_self do |parent_domains|
           [domain_name].chain(parent_domains.lazy).lazy
-        end.flat_map do |lookup_domain|
-          @cookie_map[lookup_domain].try(:values) || []
-        end.yield_self do |cookie_records|
-          filter_cookie(cookie_records, document_path, is_document_secure)
-        end.select do |cookie_record|
-          next true if cookie_record[:domain] == domain_name
-          cookie_record[:include_subdomains]
         end
+        compile_effective_cookies(domain_candidates, document_path) do |_cookie_name, cookie_record|
+          filter_cookie(cookie_record, is_document_secure, current_time) &&
+            ((cookie_record[:domain] == domain_name) || cookie_record[:include_subdomains])
+        end.values
       end
 
       def cookie_for_ip_address(document_path, is_document_secure, ip_address)
-        (
-        @cookie_map[ip_address.to_s].try(:values) || []
-        ).lazy.yield_self do |cookie_records|
-          filter_cookie(cookie_records, document_path, is_document_secure)
-        end
+        current_time = @get_current_time.call
+        compile_effective_cookies([ip_address.to_s], document_path) do |_cookie_name, cookie_record|
+          filter_cookie(cookie_record, is_document_secure, current_time)
+        end.values
       end
 
-      def filter_cookie(cookie_records, document_path, is_document_secure)
-        current_time = @get_current_time.call
-        cookie_records.select do |cookie_record|
-          !cookie_record[:expires] || current_time < cookie_record[:expires]
-        end.select do |cookie_record|
-          next true if is_document_secure
-          !cookie_record[:secure]
-        end.select do |cookie_record|
-          next true unless cookie_record[:path].present?
-          next true if document_path.blank? && (cookie_record[:path] == ?/)
-          document_path.start_with?(cookie_record[:path])
-        end
+      def filter_cookie(cookie_record, is_document_secure, current_time)
+        (!cookie_record[:expires] || current_time < cookie_record[:expires]) &&
+          (is_document_secure || !cookie_record[:secure])
       end
     end
   end
