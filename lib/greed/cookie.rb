@@ -10,17 +10,23 @@ module Greed
     autoload :Jar
     autoload :Parser
 
-    'greed/cookie/expiration_handler'.yield_self do |load_path|
+    'greed/cookie/expiration_handler'.tap do |load_path|
       autoload :ExpirationHandler
       autoload :ExpirationError, load_path
       autoload :Expired, load_path
     end
 
-    'greed/cookie/domain_handler'.yield_self do |load_path|
+    'greed/cookie/domain_handler'.tap do |load_path|
       autoload :DomainHandler
       autoload :DomainError, load_path
       autoload :CrossDomainViolation, load_path
       autoload :MalformedCookieDomain, load_path
+    end
+
+    'greed/cookie/path_handler'.tap do |load_path|
+      autoload :PathHandler
+      autoload :PathError, load_path
+      autoload :PathViolation, load_path
     end
   end
 end
