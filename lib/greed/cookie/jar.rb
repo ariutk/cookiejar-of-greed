@@ -133,11 +133,12 @@ module Greed
         end
         effective_cookies = {}
         domain_candidates.each do |domain_candidate|
+          domain_holder = @cookie_map[domain_candidate]
+          next unless domain_holder
           path_candidates.each do |path_candidate|
-            additional_cookies = (@cookie_map.dig(
-              domain_candidate,
-              path_candidate,
-            ) || {}).select(&cookie_selector)
+            additional_cookies = domain_holder[path_candidate]
+            next unless additional_cookies.respond_to?(:select)
+            additional_cookies = additional_cookies.select(&cookie_selector)
             effective_cookies = additional_cookies.merge(effective_cookies)
           end
         end
