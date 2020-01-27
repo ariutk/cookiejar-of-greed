@@ -9,6 +9,8 @@ require 'uri'
 module Greed
   module Cookie
     class Jar
+      include Iterator
+
       def initialize(\
         set_cookie_parser: nil,
         get_current_time: nil,
@@ -122,15 +124,7 @@ module Greed
       private
 
       def compile_effective_cookies(domain_candidates, document_path, &cookie_selector)
-        ensured_absolute = document_path.sub(/\A\/*/, ?/)
-        path_candidates = ::Enumerator.new do |yielder|
-          scanner = ::File.expand_path(?., ensured_absolute)
-          loop do
-            yielder << scanner
-            break if ?/ == scanner
-            scanner = ::File.expand_path('..', scanner)
-          end
-        end
+        path_candidates = iterate_cookie_path(document_path)
         effective_cookies = {}
         domain_candidates.each do |domain_candidate|
           domain_holder = @cookie_map[domain_candidate]
@@ -147,18 +141,7 @@ module Greed
 
       def cookie_for_domain(document_path, is_document_secure, domain_name)
         current_time = @get_current_time.call
-        chunk_scanner = /\A[-_\w\d]+\./
-        domain_candidates = ::Enumerator.new do |yielder|
-          scanner = ::StringScanner.new(domain_name)
-          loop do
-            break if scanner.eos?
-            removed_part = scanner.scan(chunk_scanner)
-            break unless removed_part
-            yielder << scanner.rest
-          end
-        end.yield_self do |parent_domains|
-          [domain_name].chain(parent_domains.lazy).lazy
-        end.map(&:downcase)
+        domain_candidates = iterate_cookie_domain(domain_name)
         compile_effective_cookies(domain_candidates, document_path) do |_cookie_name, cookie_record|
           filter_cookie(cookie_record, is_document_secure, current_time) &&
             ((cookie_record[:domain] == domain_name) || cookie_record[:include_subdomains])
