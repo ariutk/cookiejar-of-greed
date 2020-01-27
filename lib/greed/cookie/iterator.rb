@@ -17,7 +17,7 @@ module Greed
             break unless removed_part
             yielder << scanner.rest
           end
-        end.lazy.select do |parent_domain|
+        end.lazy.take_while do |parent_domain|
           ::PublicSuffix.valid?(parent_domain, ignore_private: true)
         end.yield_self do |parent_domains|
           [domain_name].chain(parent_domains)
