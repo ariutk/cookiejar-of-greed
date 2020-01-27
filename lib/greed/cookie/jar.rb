@@ -12,6 +12,7 @@ module Greed
       include Iterator
 
       def initialize(\
+        state = nil,
         set_cookie_parser: nil,
         get_current_time: nil,
         calculate_expiration: nil,
@@ -23,7 +24,7 @@ module Greed
         @calculate_expiration = calculate_expiration || ExpirationHandler.new.method(:calculate_expiration)
         @determine_domain = determine_domain || DomainHandler.new.method(:determine_domain)
         @determine_path = determine_path || PathHandler.new.method(:determine_path)
-        @cookie_map = {}
+        @cookie_map = state || {}
       end
 
       def append_cookie(document_uri, cookie_hash)

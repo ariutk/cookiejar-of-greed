@@ -15,7 +15,7 @@ module Greed
 
       def determine_path(document_path, cookie_path)
         return generate_default_path(document_path) if cookie_path.blank?
-        # speed optimization for the common use cases
+        # speed optimization for the common use case
         if cookie_path == ?/
           return {
             path: ?/,
