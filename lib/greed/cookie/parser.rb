@@ -92,6 +92,7 @@ module Greed
           domain: attributes_parsed[:domain].presence.try(:strip),
           path: attributes_parsed[:path].presence.try(:strip),
           samesite: attributes_parsed[:samesite].yield_self do |same_site|
+            break 'Lax' unless same_site.present?
             %w[Strict Lax None]
               .lazy
               .select { |enum_value| enum_value.casecmp?(same_site) }

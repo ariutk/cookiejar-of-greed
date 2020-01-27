@@ -36,7 +36,7 @@ module Greed
             "expires=null; "\
             'path=/; '\
             'secure; '\
-            'HttpOnly'
+            'samesite=none'
           )
         end
         it 'should be able to handles an invalid expiration value' do
