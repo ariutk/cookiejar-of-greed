@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require 'active_support/core_ext/object/blank'
+require 'public_suffix'
 require 'strscan'
 
 module Greed
@@ -16,8 +17,10 @@ module Greed
             break unless removed_part
             yielder << scanner.rest
           end
+        end.lazy.select do |parent_domain|
+          ::PublicSuffix.valid?(parent_domain, ignore_private: true)
         end.yield_self do |parent_domains|
-          [domain_name].chain(parent_domains.lazy).lazy
+          [domain_name].chain(parent_domains)
         end
       end
 
