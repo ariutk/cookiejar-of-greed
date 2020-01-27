@@ -49,7 +49,7 @@ module Greed
         let(:parsed_c) do
           subject.parse('asdfghjkl.zxcvbnm=poiuytrewq; =;')
         end
-        it 'should return nil on unparsable occurrence' do
+        it 'should return nil on an unparsable occurrence' do
           expect { parsed_c }.not_to raise_error
           parsed = parsed_c
           expect(parsed).to be_nil
