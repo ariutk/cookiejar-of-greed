@@ -7,9 +7,9 @@ module Greed
     extend ::ActiveSupport::Autoload
 
     autoload :Error
+    autoload :Iterator
     autoload :Jar
     autoload :Parser
-    autoload :Iterator
 
     'greed/cookie/expiration_handler'.tap do |load_path|
       autoload :ExpirationHandler
