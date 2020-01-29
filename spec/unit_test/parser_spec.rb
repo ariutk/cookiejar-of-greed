@@ -3,7 +3,6 @@
 module Greed
   module Cookie
     module ParserTest
-
       RSpec.describe Parser do
         let(:token) { '5cb6-6788,7cc8,gdiq/Dikg==' }
         let(:expires) { 'Sat, 23-Jan-2021 13:55:13 GMT' }
