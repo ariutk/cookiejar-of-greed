@@ -93,6 +93,7 @@ module Greed
           nil
         end
         return cookie_for_ip_address(parsed_document_uri.path, is_secure, ip_address) if ip_address
+        return [] unless domain_name.present?
         cookie_for_domain(parsed_document_uri.path, is_secure, domain_name)
       end
 
