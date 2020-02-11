@@ -113,12 +113,14 @@ module Greed
             path_holder.select do |_cookie_name, cookie_record|
               !cookie_record[:expires] || current_time < cookie_record[:expires]
             end.yield_self do |filtered_result|
+              break nil unless filtered_result.present?
               [path_name, filtered_result]
             end
-          end.to_h.yield_self do |filtered_result|
+          end.compact.to_h.yield_self do |filtered_result|
+            break nil unless filtered_result.present?
             [domain_name, filtered_result]
           end
-        end.to_h
+        end.compact.to_h
         nil
       end
 
