@@ -24,6 +24,16 @@ implementing a subset of the former.
 gem 'cookiejar_of_greed'
 ~~~
 
+## What problem does this gem solves?
+
+* Library loading are thread-safed, leveraging on `ActiveSupport::Autoload`.
+* More tolerance to non-standard cookies
+
+## Which features the gem does not currently supported?
+
+* Cookie limit, and storage limit. (Depends on your use cases, this can made your implementation insecure.)
+* Netscape's cookies.txt serialization
+
 ## Usage examples
 
 #### Creating a cookiejar
