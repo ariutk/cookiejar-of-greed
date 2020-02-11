@@ -23,7 +23,9 @@ Gem::Specification.new do |spec|
     'source_code_uri' => "https://github.com/the-cave/cookiejar-of-greed/tree/v#{version}"
   }
 
-  spec.files = Dir['lib/**/*']
+  spec.files = Dir['lib/**/*'].concat([
+    'LICENSE.md',
+  ])
   spec.require_paths = ['lib']
 
   spec.add_dependency 'activesupport'
