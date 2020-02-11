@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  application:
+    build: .
+    init: true
+    command: >
+      bash -c "((bundle check >/dev/null 2>&1) || bundle install) &&
+      (echo Use \\\"make bash\\\" instead, no application here, just a development environment for the libraries.)"
+    volumes:
+      - ".:/home/runner/app"
+      - "application-bundle:/usr/local/bundle"
+
+volumes:
+  application-bundle:
