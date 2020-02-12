@@ -2,7 +2,6 @@
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/object/try'
 require 'active_support/core_ext/time'
-require 'memoist'
 require 'strscan'
 require 'time'
 
@@ -10,14 +9,12 @@ module Greed
   module Cookie
     class Parser
       class << self
-        extend ::Memoist
-
-        memoize def _default_kv_matcher
-          /\A\s*([-_.+%\d\w]+)=\s*([^;]*)\s*(?:;\s*|\z)/
+        def _default_kv_matcher
+          @__default_kv_matcher ||= /\A\s*([-_.+%\d\w]+)=\s*([^;]*)\s*(?:;\s*|\z)/
         end
 
-        memoize def _default_flag_matcher
-          /\A\s*([-_\w\d]+)\s*(?:;\s*|\z)/
+        def _default_flag_matcher
+          @__default_flag_matcher ||= /\A\s*([-_\w\d]+)\s*(?:;\s*|\z)/
         end
       end
 

@@ -3,7 +3,6 @@ PATH
   specs:
     cookiejar_of_greed (0.0.1)
       activesupport
-      memoist
       public_suffix
 
 GEM
@@ -21,7 +20,6 @@ GEM
     i18n (1.8.2)
       concurrent-ruby (~> 1.0)
     json (2.3.0)
-    memoist (0.16.2)
     minitest (5.14.0)
     public_suffix (4.0.3)
     rake (13.0.1)
