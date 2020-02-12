@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cookiejar_of_greed (0.0.1)
+    cookiejar_of_greed (0.0.2)
       activesupport
       public_suffix
 
