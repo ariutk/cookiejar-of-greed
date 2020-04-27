@@ -67,6 +67,16 @@ rehydrated_jar = ::Greed::Cookie::Jar.new(serializable_content)
 cookie_header = cookie_jar.cookie_header_for('http://localhost/dashboard')
 ~~~
 
+#### Retrieving cookies from the jar in Hash format
+~~~ruby
+cookie_header = cookie_jar.cookies('http://localhost/dashboard')
+~~~
+
+#### Retrieving cookie value from the jar
+~~~ruby
+cookie_header = cookie_jar.cookies('http://localhost/dashboard').fetch("cookie_name")
+~~~
+
 ## Contributing
 
 Even though I started the project for myself,

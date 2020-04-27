@@ -103,6 +103,12 @@ module Greed
         end.to_a.join('; ')
       end
 
+      def cookies(document_uri)
+        cookie_record_for(document_uri).map do |cookie_record|
+          [cookie_record[:name], cookie_record[:value]]
+        end.to_h
+      end
+
       def parse_set_cookie(document_uri, header)
         append_cookie(document_uri, @set_cookie_parser.call(header))
       end
